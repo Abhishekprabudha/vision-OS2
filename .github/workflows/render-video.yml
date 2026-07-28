@@ -1,0 +1,62 @@
+name: Render AI Native Vision Agents video
+
+on:
+  workflow_dispatch:
+    inputs:
+      voice:
+        description: Microsoft Edge neural voice
+        required: true
+        default: en-GB-RyanNeural
+      rate:
+        description: Narration speed adjustment
+        required: true
+        default: +2%
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install FFmpeg and fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Validate repository
+        run: python scripts/validate_repo.py
+
+      - name: Generate neural narration
+        run: |
+          python scripts/generate_narration.py \
+            --engine edge \
+            --voice "${{ inputs.voice }}" \
+            --rate "${{ inputs.rate }}" \
+            --output assets/audio/narration.mp3
+
+      - name: Render final film
+        run: python scripts/render_video.py --narration assets/audio/narration.mp3
+
+      - name: Upload MP4, captions and timeline
+        uses: actions/upload-artifact@v4
+        with:
+          name: AIonOS-AI-Native-Vision-Agents-Film
+          path: |
+            dist/ai-native-vision-agents.mp4
+            dist/captions.srt
+            dist/captions.vtt
+            dist/timeline.json
+            dist/poster.jpg
+          retention-days: 30
