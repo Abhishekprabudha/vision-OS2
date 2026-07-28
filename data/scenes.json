@@ -186,7 +186,7 @@
           "label": "HEAVY EQUIPMENT"
         }
       ],
-      "narration": "They detect unsafe proximity, identify stalled moves and connect ground reality with yard planning and vessel priorities."
+      "narration": "They detect unsafe proximity in real time, flag stalled container moves before delays cascade, and connect ground reality with yard planning, equipment availability, and vessel priorities."
     },
     {
       "id": "scene-09",
