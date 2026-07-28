@@ -1,0 +1,261 @@
+{
+  "meta": {
+    "title": "AI Native Vision Agents",
+    "subtitle": "One reusable intelligence fabric across manufacturing, logistics, ports and airports",
+    "brand": "AIonOS",
+    "resolution": "1280x720",
+    "fps": 24,
+    "transitionSeconds": 0.45,
+    "maximumDurationSeconds": 177
+  },
+  "scenes": [
+    {
+      "id": "scene-00",
+      "industry": "AI NATIVE OPERATIONS",
+      "title": "Every enterprise has cameras. Very few have vision.",
+      "subtitle": "Observe \u00b7 Understand \u00b7 Decide \u00b7 Act",
+      "source": "assets/video/opening-nx.mp4",
+      "start": 0,
+      "durationHint": 10,
+      "accent": "#6EE7F7",
+      "narration": "Every enterprise has cameras. Very few have vision. AI-native vision agents turn passive video into a live intelligence layer that can observe, understand and coordinate action in seconds."
+    },
+    {
+      "id": "scene-01",
+      "industry": "CROSS-INDUSTRY VISION FABRIC",
+      "title": "Thousands of moments. One reasoning layer.",
+      "subtitle": "Plants \u00b7 Fleets \u00b7 Warehouses \u00b7 Ports \u00b7 Airports",
+      "source": "assets/video/fleet-trucks.mp4",
+      "start": 2,
+      "durationHint": 12,
+      "accent": "#A78BFA",
+      "narration": "Across a plant, a highway, a warehouse, a port or an airport, thousands of moments unfold at once. Human teams cannot watch every feed, connect every signal or intervene early enough. Vision agents can."
+    },
+    {
+      "id": "scene-02",
+      "industry": "MANUFACTURING SAFETY",
+      "title": "Predict risk before contact",
+      "subtitle": "Human\u2013vehicle proximity \u00b7 PPE \u00b7 Zone intelligence",
+      "source": "assets/video/plant-safety.mp4",
+      "start": 40,
+      "durationHint": 13,
+      "accent": "#34D399",
+      "boxes": [
+        {
+          "x": 655,
+          "y": 140,
+          "w": 185,
+          "h": 360,
+          "label": "WORKER TRACK"
+        },
+        {
+          "x": 80,
+          "y": 430,
+          "w": 470,
+          "h": 170,
+          "label": "ACTIVE AISLE"
+        }
+      ],
+      "narration": "In manufacturing, the agent understands zones, people, vehicles, protective equipment and process flow. It can identify a developing human\u2013vehicle conflict before contact, alert the right supervisor and preserve evidence for review."
+    },
+    {
+      "id": "scene-03",
+      "industry": "MANUFACTURING QUALITY",
+      "title": "Turn footage into structured evidence",
+      "subtitle": "Anomalies \u00b7 Process flow \u00b7 Audit-ready context",
+      "source": "assets/video/plant-safety.mp4",
+      "start": 122,
+      "durationHint": 12,
+      "accent": "#34D399",
+      "boxes": [
+        {
+          "x": 105,
+          "y": 225,
+          "w": 255,
+          "h": 205,
+          "label": "FLOW ANOMALY"
+        },
+        {
+          "x": 785,
+          "y": 210,
+          "w": 260,
+          "h": 210,
+          "label": "PACKAGE TRACK"
+        }
+      ],
+      "narration": "The same vision fabric detects blocked aisles, unsafe handling, line imbalance, packaging anomalies and repetitive risk. Each event becomes structured context\u2014not another hour of footage waiting to be reviewed."
+    },
+    {
+      "id": "scene-04",
+      "industry": "FLEET SAFETY",
+      "title": "Coach safer driving in the moment",
+      "subtitle": "Following distance \u00b7 Distraction \u00b7 Fatigue \u00b7 Lane discipline",
+      "source": "assets/video/driver-dashcam.webm",
+      "start": 5,
+      "durationHint": 14,
+      "accent": "#FBBF24",
+      "boxes": [
+        {
+          "x": 85,
+          "y": 210,
+          "w": 400,
+          "h": 250,
+          "label": "ROAD CONTEXT"
+        },
+        {
+          "x": 765,
+          "y": 205,
+          "w": 220,
+          "h": 235,
+          "label": "DRIVER STATE"
+        }
+      ],
+      "narration": "On the road, vision agents interpret driver behaviour and the environment together. Unsafe following distance, distraction, fatigue cues, harsh manoeuvres and lane drift can trigger immediate coaching and build a transparent record for safer fleet operations."
+    },
+    {
+      "id": "scene-05",
+      "industry": "WAREHOUSE OPERATIONS",
+      "title": "Make existing CCTV operational",
+      "subtitle": "Movement verification \u00b7 Congestion \u00b7 Forklift proximity \u00b7 Damage",
+      "source": "assets/video/warehouse-vision.mp4",
+      "start": 3,
+      "durationHint": 13,
+      "accent": "#F97316",
+      "narration": "Inside the warehouse, existing cameras become an active control surface. Agents verify movement, detect congestion, monitor forklift proximity, flag damaged packages and surface exceptions to the teams who can act."
+    },
+    {
+      "id": "scene-06",
+      "industry": "AGENTIC CONTROL TOWER",
+      "title": "Move from alert to coordinated action",
+      "subtitle": "Prioritise \u00b7 Recommend \u00b7 Assign \u00b7 Track closure",
+      "source": "assets/video/control-tower.mp4",
+      "start": 8,
+      "durationHint": 13,
+      "accent": "#60A5FA",
+      "narration": "Those insights do not stop at an alert. They flow into a control tower, where operations agents prioritise the event, recommend the next best action, assign ownership and track closure across the network."
+    },
+    {
+      "id": "scene-07",
+      "industry": "PORT OPERATIONS",
+      "title": "See every move across the yard",
+      "subtitle": "Container flow \u00b7 Equipment utilisation \u00b7 Stalled moves",
+      "source": "assets/video/port-yard.mp4",
+      "start": 3,
+      "durationHint": 13,
+      "accent": "#22D3EE",
+      "boxes": [
+        {
+          "x": 465,
+          "y": 310,
+          "w": 245,
+          "h": 175,
+          "label": "EQUIPMENT TRACK"
+        },
+        {
+          "x": 195,
+          "y": 220,
+          "w": 260,
+          "h": 155,
+          "label": "CONTAINER MOVE"
+        }
+      ],
+      "narration": "At the port, vision agents follow containers, equipment and people through constantly changing zones."
+    },
+    {
+      "id": "scene-08",
+      "industry": "PORT SAFETY",
+      "title": "Protect people around heavy equipment",
+      "subtitle": "Dynamic zones \u00b7 Proximity risk \u00b7 Human-in-the-loop intervention",
+      "source": "assets/video/port-operator.mp4",
+      "start": 1,
+      "durationHint": 14,
+      "accent": "#22D3EE",
+      "boxes": [
+        {
+          "x": 215,
+          "y": 120,
+          "w": 205,
+          "h": 430,
+          "label": "PERSON"
+        },
+        {
+          "x": 545,
+          "y": 140,
+          "w": 560,
+          "h": 430,
+          "label": "HEAVY EQUIPMENT"
+        }
+      ],
+      "narration": "They detect unsafe proximity, identify stalled moves and connect ground reality with yard planning and vessel priorities."
+    },
+    {
+      "id": "scene-09",
+      "industry": "AIRPORT PASSENGER FLOW",
+      "title": "Predict congestion before passengers feel it",
+      "subtitle": "Crowd density \u00b7 Queue movement \u00b7 Staff deployment",
+      "source": "assets/video/airport-crowd.mp4",
+      "start": 0,
+      "durationHint": 13,
+      "accent": "#C084FC",
+      "boxes": [
+        {
+          "x": 90,
+          "y": 250,
+          "w": 1090,
+          "h": 270,
+          "label": "DENSITY ZONE \u00b7 RISING"
+        }
+      ],
+      "narration": "At the airport, crowd density and queue movement become predictive signals. Vision agents anticipate bottlenecks, guide staff deployment and protect passenger flow before congestion becomes visible to the traveller."
+    },
+    {
+      "id": "scene-10",
+      "industry": "BAGGAGE & AIRSIDE",
+      "title": "Protect every operational handoff",
+      "subtitle": "Movement \u00b7 Timing \u00b7 Asset location \u00b7 Mismatch risk",
+      "source": "assets/video/airport-baggage.mp4",
+      "start": 0,
+      "durationHint": 12,
+      "accent": "#C084FC",
+      "boxes": [
+        {
+          "x": 210,
+          "y": 190,
+          "w": 255,
+          "h": 255,
+          "label": "BAG ID MATCH"
+        },
+        {
+          "x": 680,
+          "y": 195,
+          "w": 275,
+          "h": 255,
+          "label": "HANDOFF VERIFIED"
+        }
+      ],
+      "narration": "At baggage and airside operations, the agent correlates movement, timing and asset location. It surfaces mismatch risk, protects restricted zones and helps recover turnaround minutes before delay becomes irreversible."
+    },
+    {
+      "id": "scene-11",
+      "industry": "UNIFIED COMMAND",
+      "title": "A prioritised stream of verified events",
+      "subtitle": "Recommended actions \u00b7 Human approvals \u00b7 Cross-site governance",
+      "source": "assets/video/airport-command.mp4",
+      "start": 0,
+      "durationHint": 13,
+      "accent": "#6EE7F7",
+      "narration": "The command centre no longer waits for reports. It receives a prioritised stream of verified events, recommended actions and human approvals\u2014across sites, systems and industries."
+    },
+    {
+      "id": "scene-12",
+      "industry": "AIonOS",
+      "title": "Turn what enterprises can see into what they can do.",
+      "subtitle": "One reusable vision-agent fabric. Many industries.",
+      "source": "assets/video/plane-landing.mp4",
+      "start": 15,
+      "durationHint": 10,
+      "accent": "#6EE7F7",
+      "narration": "This is the shift from computer vision to AI-native vision agents: edge-aware, privacy-conscious, human-governed and connected to enterprise workflows. The camera becomes a sensor. The agent becomes the reasoning layer. Operations become proactive. One reusable vision-agent fabric. Many industries. Safer people, faster operations and decisions made while they still matter. AIonOS turns what enterprises can see into what they can do."
+    }
+  ]
+}
