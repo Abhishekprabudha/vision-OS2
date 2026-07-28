@@ -1,6 +1,6 @@
 import unittest
 
-from scripts.render_video import fit_narration
+from scripts.render_video import fit_narration, tracked_box_position
 
 
 class FitNarrationTests(unittest.TestCase):
@@ -23,6 +23,26 @@ class FitNarrationTests(unittest.TestCase):
     def test_rejects_scene_plan_over_limit(self) -> None:
         with self.assertRaisesRegex(SystemExit, "Shorten data/scenes.json"):
             fit_narration(160.0, 180.0, 177.0)
+
+
+class TrackedBoxTests(unittest.TestCase):
+    def test_detection_box_moves_during_scene(self) -> None:
+        box = {"x": 100, "y": 120, "w": 200, "h": 150}
+
+        self.assertNotEqual(
+            tracked_box_position(box, 0.0, 10.0),
+            tracked_box_position(box, 2.0, 10.0),
+        )
+
+    def test_detection_box_stays_inside_frame(self) -> None:
+        box = {
+            "x": 1270, "y": 710, "w": 100, "h": 100,
+            "motion": {"x": 200, "y": 200},
+        }
+
+        x, y, w, h = tracked_box_position(box, 2.0, 10.0)
+        self.assertLessEqual(x + w, 1280)
+        self.assertLessEqual(y + h, 720)
 
 
 if __name__ == "__main__":
