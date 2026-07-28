@@ -142,6 +142,7 @@
       "source": "assets/video/port-yard.mp4",
       "start": 3,
       "durationHint": 13,
+      "videoSpeed": 1.5,
       "accent": "#22D3EE",
       "boxes": [
         {
@@ -169,6 +170,7 @@
       "source": "assets/video/port-operator.mp4",
       "start": 1,
       "durationHint": 14,
+      "videoSpeed": 1.5,
       "accent": "#22D3EE",
       "boxes": [
         {

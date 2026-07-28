@@ -97,7 +97,36 @@ def wrap(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont, max
     return lines
 
 
-def create_overlay(scene: dict[str, Any], index: int, count: int, output: Path) -> None:
+def tracked_box_position(
+    box: dict[str, Any], elapsed: float, duration: float
+) -> tuple[int, int, int, int]:
+    """Return a gently moving detection box that follows its point of interest.
+
+    ``motion`` values are pixel offsets from the authored box position.  A
+    smooth eased path avoids the mechanical look of a fixed HUD while keeping
+    the annotation on the same subject throughout a shot.
+    """
+    x, y, w, h = (int(box[key]) for key in ("x", "y", "w", "h"))
+    motion = box.get("motion", {})
+    dx = float(motion.get("x", max(10, min(32, w * 0.08))))
+    dy = float(motion.get("y", max(8, min(22, h * 0.06))))
+    phase = float(motion.get("phase", 0.0))
+    progress = min(1.0, max(0.0, elapsed / max(duration, 0.001)))
+    # Combine a shot-long drift with a smaller independent vertical correction.
+    offset_x = dx * math.sin((progress * 1.25 + phase) * math.tau)
+    offset_y = dy * math.sin((progress * 1.75 + phase + 0.18) * math.tau)
+    return (
+        max(0, min(WIDTH - w, round(x + offset_x))),
+        max(88, min(HEIGHT - h, round(y + offset_y))),
+        w,
+        h,
+    )
+
+
+def create_overlay(
+    scene: dict[str, Any], index: int, count: int, output: Path,
+    elapsed: float = 0.0, duration: float = 1.0,
+) -> None:
     img = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img, "RGBA")
     accent = hex_rgb(scene.get("accent", "#6EE7F7"))
@@ -142,7 +171,7 @@ def create_overlay(scene: dict[str, Any], index: int, count: int, output: Path) 
     draw.text((46, 676), f"AIonOS  ·  AI NATIVE VISION AGENTS  ·  {index + 1:02d}/{count:02d}", font=tiny, fill=(160, 185, 203, 220))
 
     for box in scene.get("boxes", []):
-        x, yb, w, h = box["x"], box["y"], box["w"], box["h"]
+        x, yb, w, h = tracked_box_position(box, elapsed, duration)
         # Corner-style detection box.
         corner = min(36, w // 4, h // 4)
         for x1, y1, x2, y2 in [
@@ -161,14 +190,34 @@ def create_overlay(scene: dict[str, Any], index: int, count: int, output: Path) 
     img.save(output)
 
 
+def create_animated_overlay(
+    scene: dict[str, Any], index: int, count: int, duration: float, output: Path
+) -> None:
+    """Encode the HUD as a lossless RGBA movie so detections stay in motion."""
+    frame_dir = output.parent / f"{output.stem}-frames"
+    frame_dir.mkdir(parents=True, exist_ok=True)
+    frame_count = max(1, math.ceil(duration * FPS))
+    for frame in range(frame_count):
+        create_overlay(
+            scene, index, count, frame_dir / f"{frame:05d}.png",
+            elapsed=frame / FPS, duration=duration,
+        )
+    run([
+        "ffmpeg", "-y", "-framerate", str(FPS), "-i", str(frame_dir / "%05d.png"),
+        "-c:v", "qtrle", "-pix_fmt", "argb", str(output),
+    ])
+    shutil.rmtree(frame_dir)
+
+
 def render_scene(scene: dict[str, Any], duration: float, overlay: Path, output: Path) -> None:
     source = ROOT / scene["source"]
     if not source.exists():
         raise SystemExit(f"Missing source video: {source}")
     start = float(scene.get("start", 0))
+    video_speed = float(scene.get("videoSpeed", 1.0))
     vf = (
         f"[0:v]scale={WIDTH}:{HEIGHT}:force_original_aspect_ratio=increase,"
-        f"crop={WIDTH}:{HEIGHT},fps={FPS},setsar=1,"
+        f"crop={WIDTH}:{HEIGHT},setpts=PTS/{video_speed:.6f},fps={FPS},setsar=1,"
         "eq=contrast=1.06:saturation=1.08:brightness=-0.015,"
         f"fade=t=in:st=0:d=0.18,fade=t=out:st={max(0.0, duration-0.18):.3f}:d=0.18,"
         "drawbox=x=0:y='mod(t*135,720)':w=1280:h=2:color=0x6EE7F7@0.10:t=fill[base];"
@@ -176,7 +225,7 @@ def render_scene(scene: dict[str, Any], duration: float, overlay: Path, output: 
     )
     run([
         "ffmpeg", "-y", "-stream_loop", "-1", "-ss", f"{start:.3f}", "-i", str(source),
-        "-loop", "1", "-i", str(overlay), "-t", f"{duration:.3f}",
+        "-i", str(overlay), "-t", f"{duration:.3f}",
         "-filter_complex", vf, "-map", "[out]", "-an", "-r", str(FPS),
         "-c:v", "libx264", "-preset", "ultrafast", "-crf", "20", "-pix_fmt", "yuv420p", str(output),
     ])
@@ -222,7 +271,11 @@ def main() -> None:
     scenes = config["scenes"]
     overlap = 0.0  # scene-level cinematic fades are used for robust browser/GitHub rendering
     max_duration = float(config["meta"].get("maximumDurationSeconds", 177))
-    base_sum = sum(float(s["durationHint"]) for s in scenes)
+    # Faster visual playback also advances the edit sooner. Narration remains
+    # untouched; this is used to bring lagging visuals back under their voiceover.
+    base_sum = sum(
+        float(s["durationHint"]) / float(s.get("videoSpeed", 1.0)) for s in scenes
+    )
     base_total = base_sum
     narration_duration = probe_duration(args.narration)
     target_total, narration_tempo = fit_narration(narration_duration, base_total, max_duration)
@@ -232,7 +285,10 @@ def main() -> None:
             f"tempo correction to meet the {max_duration:.0f}s limit."
         )
     scale = target_total / base_sum
-    durations = [float(s["durationHint"]) * scale for s in scenes]
+    durations = [
+        float(s["durationHint"]) / float(s.get("videoSpeed", 1.0)) * scale
+        for s in scenes
+    ]
 
     if BUILD.exists():
         shutil.rmtree(BUILD)
@@ -242,9 +298,9 @@ def main() -> None:
 
     scene_files: list[Path] = []
     for i, (scene, duration) in enumerate(zip(scenes, durations, strict=True)):
-        overlay = BUILD / "overlays" / f"{scene['id']}.png"
+        overlay = BUILD / "overlays" / f"{scene['id']}.mov"
         clip = BUILD / "scenes" / f"{scene['id']}.mp4"
-        create_overlay(scene, i, len(scenes), overlay)
+        create_animated_overlay(scene, i, len(scenes), duration, overlay)
         render_scene(scene, duration, overlay, clip)
         scene_files.append(clip)
 
