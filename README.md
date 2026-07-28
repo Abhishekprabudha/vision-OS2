@@ -53,7 +53,7 @@ Open `http://localhost:8000`.
 
 ## Edit the film
 
-Change `data/scenes.json` to adjust scene order, source clips, trim points, on-screen copy, colours and AI detection boxes. Change `assets/audio/narration.txt` to revise the voiceover. The renderer measures the generated narration and scales the scene timings while enforcing a maximum final duration of 177 seconds.
+Change `data/scenes.json` to adjust scene order, source clips, trim points, on-screen copy, colours and AI detection boxes. Change `assets/audio/narration.txt` to revise the voiceover. The renderer measures the generated narration and scales the scene timings while enforcing a maximum final duration of 177 seconds. Because neural voices can vary slightly in duration, the renderer automatically applies up to a 10% tempo correction; larger overruns still fail with guidance to shorten the script or increase the TTS rate.
 
 ## Asset provenance
 

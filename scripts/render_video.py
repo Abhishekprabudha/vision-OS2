@@ -17,6 +17,8 @@ DATA = ROOT / "data" / "scenes.json"
 BUILD = ROOT / ".render"
 DIST = ROOT / "dist"
 WIDTH, HEIGHT, FPS = 1280, 720, 24
+NARRATION_PADDING_SECONDS = 3.0
+MAX_AUTOMATIC_TEMPO = 1.10
 
 
 def run(cmd: list[str]) -> None:
@@ -30,6 +32,37 @@ def probe_duration(path: Path) -> float:
         "-of", "default=noprint_wrappers=1:nokey=1", str(path),
     ], text=True).strip()
     return float(out)
+
+
+def fit_narration(
+    narration_duration: float, base_total: float, maximum_duration: float
+) -> tuple[float, float]:
+    """Return the film duration and a small narration tempo correction.
+
+    Neural TTS duration can vary between voices and edge-tts releases. Keep the
+    requested closing padding and absorb small variations rather than failing a
+    render that otherwise fits the configured runtime.
+    """
+    if base_total > maximum_duration:
+        raise SystemExit(
+            f"Scene duration hints total {base_total:.1f}s, exceeding the "
+            f"{maximum_duration:.0f}s limit. Shorten data/scenes.json."
+        )
+
+    available_voice_duration = maximum_duration - NARRATION_PADDING_SECONDS
+    if available_voice_duration <= 0:
+        raise SystemExit("Maximum duration must leave room for narration padding.")
+
+    tempo = max(1.0, narration_duration / available_voice_duration)
+    if tempo > MAX_AUTOMATIC_TEMPO:
+        raise SystemExit(
+            f"Narration is too long ({narration_duration:.1f}s) and would need "
+            f"{tempo:.3f}x tempo to meet the {maximum_duration:.0f}s limit. "
+            "Shorten assets/audio/narration.txt or increase the TTS rate."
+        )
+
+    fitted_voice_duration = narration_duration / tempo
+    return max(base_total, fitted_voice_duration + NARRATION_PADDING_SECONDS), tempo
 
 
 def font_path(bold: bool = False) -> str:
@@ -192,11 +225,11 @@ def main() -> None:
     base_sum = sum(float(s["durationHint"]) for s in scenes)
     base_total = base_sum
     narration_duration = probe_duration(args.narration)
-    target_total = max(base_total, narration_duration + 3.0)
-    if target_total > max_duration:
-        raise SystemExit(
-            f"Narration is too long ({narration_duration:.1f}s). The final video would exceed "
-            f"the {max_duration:.0f}s limit. Shorten assets/audio/narration.txt or increase TTS rate."
+    target_total, narration_tempo = fit_narration(narration_duration, base_total, max_duration)
+    if narration_tempo > 1.0:
+        print(
+            f"Narration is {narration_duration:.1f}s; applying a {narration_tempo:.3f}x "
+            f"tempo correction to meet the {max_duration:.0f}s limit."
         )
     scale = target_total / base_sum
     durations = [float(s["durationHint"]) * scale for s in scenes]
@@ -250,7 +283,11 @@ def main() -> None:
 
     timeline = create_srt(scenes, durations, overlap, DIST / "captions.srt")
     run(["ffmpeg", "-y", "-i", str(DIST / "captions.srt"), str(DIST / "captions.vtt")])
-    (DIST / "timeline.json").write_text(json.dumps({"duration": round(running, 3), "scenes": timeline}, indent=2), encoding="utf-8")
+    (DIST / "timeline.json").write_text(json.dumps({
+        "duration": round(running, 3),
+        "narrationTempo": round(narration_tempo, 4),
+        "scenes": timeline,
+    }, indent=2), encoding="utf-8")
 
     # Reuse low-volume source sound as an unobtrusive bed beneath narration.
     bed_source = ROOT / "assets" / "video" / "plane-landing.mp4"
@@ -258,7 +295,7 @@ def main() -> None:
     audio_filter = (
         f"[0:a]volume=0.055,atrim=0:{running:.3f},afade=t=in:st=0:d=2,"
         f"afade=t=out:st={max(0.0, running-3):.3f}:d=3[bed];"
-        f"[1:a]volume=1.0,apad=pad_dur={running:.3f}[voice];"
+        f"[1:a]atempo={narration_tempo:.6f},volume=1.0,apad=pad_dur={running:.3f}[voice];"
         "[bed][voice]amix=inputs=2:duration=first:dropout_transition=2,loudnorm=I=-15:TP=-1.5:LRA=9[a]"
     )
     run([
