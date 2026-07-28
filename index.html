@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#050b18" />
+  <title>AIonOS · AI Native Vision Agents</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="aurora aurora-a"></div>
+  <div class="aurora aurora-b"></div>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark"></span><strong>AIonOS</strong></div>
+    <div class="eyebrow">AI NATIVE VISION AGENTS · CROSS-INDUSTRY FILM</div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="kicker">Observe · Understand · Decide · Act</p>
+        <h1>Turn what enterprises can <em>see</em> into what they can <em>do.</em></h1>
+        <p class="lede">A sub-three-minute visual narrative woven from the supplied manufacturing, logistics, port and airport assets.</p>
+        <div class="industries">
+          <span>Manufacturing</span><span>Logistics</span><span>Ports</span><span>Airports</span>
+        </div>
+      </div>
+      <div class="hero-stat">
+        <span class="stat-value" id="durationStat">&lt; 3:00</span>
+        <span class="stat-label">Narrated film</span>
+      </div>
+    </section>
+
+    <section class="player-shell">
+      <div class="player-frame">
+        <video id="film" controls preload="metadata" poster="dist/poster.jpg">
+          <source src="dist/ai-native-vision-agents.mp4" type="video/mp4" />
+          <track default kind="captions" srclang="en" label="English" src="dist/captions.vtt" />
+          Your browser does not support HTML video.
+        </video>
+        <div class="scanline"></div>
+      </div>
+      <div class="player-meta">
+        <div><span class="pulse"></span> AI vision layer online</div>
+        <div id="nowPlaying">AI Native Vision Agents</div>
+      </div>
+    </section>
+
+    <section class="story">
+      <div class="section-heading">
+        <p class="kicker">Story architecture</p>
+        <h2>One connected operating narrative</h2>
+      </div>
+      <div id="chapters" class="chapters"></div>
+    </section>
+
+    <section class="principles">
+      <article><span>01</span><h3>Observe</h3><p>Turn live video into trusted events and operational signals.</p></article>
+      <article><span>02</span><h3>Understand</h3><p>Reason over people, assets, zones, timing and process context.</p></article>
+      <article><span>03</span><h3>Decide</h3><p>Prioritise risk and recommend the next best intervention.</p></article>
+      <article><span>04</span><h3>Act</h3><p>Connect human approvals, workflows and cross-site governance.</p></article>
+    </section>
+  </main>
+
+  <footer>
+    <div>AIonOS · AI Native Vision Agents</div>
+    <div>Built from the supplied repository assets. No external footage added.</div>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>
