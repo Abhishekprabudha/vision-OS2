@@ -2,6 +2,13 @@ const film = document.getElementById('film');
 const chapters = document.getElementById('chapters');
 const nowPlaying = document.getElementById('nowPlaying');
 const durationStat = document.getElementById('durationStat');
+const playButton = document.getElementById('playButton');
+const soundButton = document.getElementById('soundButton');
+const fullscreenButton = document.getElementById('fullscreenButton');
+const seek = document.getElementById('seek');
+const currentTime = document.getElementById('currentTime');
+const totalTime = document.getElementById('totalTime');
+const playerShell = document.querySelector('.player-shell');
 let timeline = [];
 
 const stamp = (seconds) => {
@@ -10,6 +17,46 @@ const stamp = (seconds) => {
   const s = String(total % 60).padStart(2, '0');
   return `${m}:${s}`;
 };
+
+const updateProgress = () => {
+  const duration = Number.isFinite(film.duration) ? film.duration : 0;
+  const progress = duration ? (film.currentTime / duration) * 100 : 0;
+  seek.value = progress;
+  seek.style.setProperty('--progress', `${progress}%`);
+  currentTime.textContent = stamp(film.currentTime);
+  totalTime.textContent = stamp(duration);
+};
+
+const togglePlayback = () => film.paused ? film.play() : film.pause();
+
+playButton.addEventListener('click', togglePlayback);
+film.addEventListener('click', togglePlayback);
+film.addEventListener('play', () => {
+  playButton.classList.add('is-playing');
+  playButton.setAttribute('aria-label', 'Pause video');
+});
+film.addEventListener('pause', () => {
+  playButton.classList.remove('is-playing');
+  playButton.setAttribute('aria-label', 'Play video');
+});
+film.addEventListener('loadedmetadata', updateProgress);
+film.addEventListener('durationchange', updateProgress);
+seek.addEventListener('input', () => {
+  if (Number.isFinite(film.duration)) film.currentTime = (Number(seek.value) / 100) * film.duration;
+  updateProgress();
+});
+soundButton.addEventListener('click', () => {
+  film.muted = !film.muted;
+  soundButton.classList.toggle('is-muted', film.muted);
+  soundButton.setAttribute('aria-label', film.muted ? 'Unmute video' : 'Mute video');
+});
+fullscreenButton.addEventListener('click', () => {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else playerShell.requestFullscreen();
+});
+document.addEventListener('fullscreenchange', () => {
+  fullscreenButton.setAttribute('aria-label', document.fullscreenElement ? 'Exit full screen' : 'Enter full screen');
+});
 
 fetch('dist/timeline.json')
   .then((r) => {
@@ -38,6 +85,7 @@ fetch('dist/timeline.json')
   });
 
 film.addEventListener('timeupdate', () => {
+  updateProgress();
   if (!timeline.length) return;
   const index = timeline.findIndex((scene) => film.currentTime >= scene.start && film.currentTime < scene.end);
   document.querySelectorAll('.chapter').forEach((el, i) => el.classList.toggle('active', i === index));
