@@ -17,6 +17,7 @@ DATA = ROOT / "data" / "scenes.json"
 BUILD = ROOT / ".render"
 DIST = ROOT / "dist"
 WIDTH, HEIGHT, FPS = 1280, 720, 24
+LOWER_THIRD_TOP = 602
 NARRATION_PADDING_SECONDS = 3.0
 MAX_AUTOMATIC_TEMPO = 1.10
 
@@ -131,16 +132,22 @@ def create_overlay(
     draw = ImageDraw.Draw(img, "RGBA")
     accent = hex_rgb(scene.get("accent", "#6EE7F7"))
 
-    # Cinematic top vignette and lower-third panel.
+    # Cinematic top vignette and a compact lower third. The panel is half the
+    # height of the original 235 px ribbon, leaving substantially more of the
+    # footage visible while retaining a clear information hierarchy.
     draw.rectangle((0, 0, WIDTH, 86), fill=(4, 10, 24, 120))
-    draw.rectangle((0, 485, WIDTH, HEIGHT), fill=(4, 10, 24, 205))
-    draw.rectangle((0, 485, 8, HEIGHT), fill=(*accent, 255))
+    for y_panel in range(LOWER_THIRD_TOP, HEIGHT):
+        progress = (y_panel - LOWER_THIRD_TOP) / (HEIGHT - LOWER_THIRD_TOP)
+        alpha = round(178 + 42 * progress)
+        draw.line((0, y_panel, WIDTH, y_panel), fill=(4, 10, 24, alpha))
+    draw.rectangle((0, LOWER_THIRD_TOP, 6, HEIGHT), fill=(*accent, 245))
+    draw.line((0, LOWER_THIRD_TOP, WIDTH, LOWER_THIRD_TOP), fill=(*accent, 55), width=1)
     draw.line((0, 86, WIDTH, 86), fill=(*accent, 80), width=1)
 
     small_bold = ImageFont.truetype(font_path(True), 22)
     tiny = ImageFont.truetype(font_path(False), 17)
-    title_font = ImageFont.truetype(font_path(True), 42)
-    sub_font = ImageFont.truetype(font_path(False), 22)
+    title_font = ImageFont.truetype(font_path(True), 30)
+    sub_font = ImageFont.truetype(font_path(False), 17)
 
     badge = scene["industry"].upper()
     badge_w = draw.textbbox((0, 0), badge, font=small_bold)[2] + 36
@@ -152,23 +159,22 @@ def create_overlay(
     draw.ellipse((WIDTH - live_w - 79, 35, WIDTH - live_w - 67, 47), fill=(*accent, 255))
     draw.text((WIDTH - live_w - 57, 30), live, font=tiny, fill=(220, 235, 245, 230))
 
-    title_lines = wrap(draw, scene["title"], title_font, 1010)
-    y = 516
-    for line in title_lines[:2]:
+    title_lines = wrap(draw, scene["title"], title_font, 1120)
+    y = 615
+    for line in title_lines[:1]:
         draw.text((46, y), line, font=title_font, fill=(250, 252, 255, 255))
-        y += 50
-    sub_lines = wrap(draw, scene["subtitle"], sub_font, 1040)
-    for line in sub_lines[:2]:
-        draw.text((48, y + 5), line, font=sub_font, fill=(194, 211, 224, 245))
-        y += 30
+        y += 38
+    sub_lines = wrap(draw, scene["subtitle"], sub_font, 1080)
+    for line in sub_lines[:1]:
+        draw.text((48, y), line, font=sub_font, fill=(205, 220, 232, 245))
 
     # Scene progress and agent-state detail.
-    progress_x0, progress_y = 1010, 675
+    progress_x0, progress_y = 1040, 691
     progress_w = 220
     draw.rounded_rectangle((progress_x0, progress_y, progress_x0 + progress_w, progress_y + 7), radius=3, fill=(255, 255, 255, 40))
     fill_w = int(progress_w * (index + 1) / count)
     draw.rounded_rectangle((progress_x0, progress_y, progress_x0 + fill_w, progress_y + 7), radius=3, fill=(*accent, 225))
-    draw.text((46, 676), f"AIonOS  ·  AI NATIVE VISION AGENTS  ·  {index + 1:02d}/{count:02d}", font=tiny, fill=(160, 185, 203, 220))
+    draw.text((46, 686), f"AIonOS  ·  AI NATIVE VISION AGENTS  ·  {index + 1:02d}/{count:02d}", font=tiny, fill=(160, 185, 203, 220))
 
     for box in scene.get("boxes", []):
         x, yb, w, h = tracked_box_position(box, elapsed, duration)
@@ -218,7 +224,8 @@ def render_scene(scene: dict[str, Any], duration: float, overlay: Path, output: 
     vf = (
         f"[0:v]scale={WIDTH}:{HEIGHT}:force_original_aspect_ratio=increase,"
         f"crop={WIDTH}:{HEIGHT},setpts=PTS/{video_speed:.6f},fps={FPS},setsar=1,"
-        "eq=contrast=1.06:saturation=1.08:brightness=-0.015,"
+        "eq=contrast=1.08:saturation=1.12:brightness=0.005:gamma=1.02,"
+        "unsharp=5:5:0.35:3:3:0.15,"
         f"fade=t=in:st=0:d=0.18,fade=t=out:st={max(0.0, duration-0.18):.3f}:d=0.18,"
         "drawbox=x=0:y='mod(t*135,720)':w=1280:h=2:color=0x6EE7F7@0.10:t=fill[base];"
         "[base][1:v]overlay=0:0:shortest=1,format=yuv420p[out]"
