@@ -42,6 +42,28 @@ h1 em { font-style: normal; color: var(--cyan); text-shadow: 0 0 30px rgba(110,2
 video { width: 100%; height: 100%; display: block; object-fit: cover; }
 .scanline { position: absolute; left: 0; right: 0; top: -4px; height: 2px; background: linear-gradient(90deg, transparent, var(--cyan), transparent); opacity: .35; animation: scan 6s linear infinite; pointer-events: none; }
 @keyframes scan { to { transform: translateY(660px); } }
+.player-controls { min-height: 68px; display: flex; align-items: center; gap: 14px; padding: 0 20px; background: linear-gradient(180deg, #070b12, #03060b); border-top: 1px solid rgba(255,255,255,.09); }
+.control-button { width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; padding: 0; color: var(--text); background: transparent; border: 1px solid transparent; border-radius: 50%; cursor: pointer; transition: background .2s ease, border-color .2s ease, transform .2s ease; }
+.control-button:hover { background: rgba(110,231,247,.1); border-color: rgba(110,231,247,.24); }
+.control-button:active { transform: scale(.94); }
+.control-button:focus-visible, .seek:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.play-button { background: var(--cyan); color: #041019; box-shadow: 0 0 24px rgba(110,231,247,.22); }
+.play-button:hover { background: #9af0fa; }
+.play-icon { width: 0; height: 0; margin-left: 3px; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-left: 11px solid currentColor; }
+.play-button.is-playing .play-icon { width: 11px; height: 14px; margin-left: 0; border: 0; border-left: 4px solid currentColor; border-right: 4px solid currentColor; }
+.time-display { min-width: 36px; color: #c4d2df; font-size: 12px; font-variant-numeric: tabular-nums; }
+.time-display:first-of-type { text-align: right; }
+.seek-wrap { flex: 1; display: flex; align-items: center; }
+.seek { --progress: 0%; width: 100%; height: 4px; margin: 0; appearance: none; background: linear-gradient(90deg, var(--cyan) var(--progress), rgba(255,255,255,.2) var(--progress)); border-radius: 999px; cursor: pointer; }
+.seek::-webkit-slider-thumb { width: 14px; height: 14px; appearance: none; border: 3px solid #07121d; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 0 1px rgba(110,231,247,.35); }
+.seek::-moz-range-thumb { width: 10px; height: 10px; border: 3px solid #07121d; border-radius: 50%; background: var(--cyan); }
+.sound-button span { width: 8px; height: 10px; position: relative; border-radius: 2px 0 0 2px; background: var(--cyan); }
+.sound-button span::before { content: ""; position: absolute; top: -4px; left: 6px; border-top: 9px solid transparent; border-bottom: 9px solid transparent; border-left: 9px solid var(--cyan); }
+.sound-button span::after { content: "))"; position: absolute; top: -6px; left: 14px; color: var(--cyan); font: 12px/1 monospace; letter-spacing: -4px; }
+.sound-button.is-muted span { opacity: .4; }
+.sound-button.is-muted span::after { content: "×"; top: -3px; left: 14px; font-size: 16px; }
+.fullscreen-button span { width: 16px; height: 16px; border: solid var(--cyan); border-width: 2px 0; position: relative; }
+.fullscreen-button span::after { content: ""; position: absolute; inset: -2px 0; border: solid var(--cyan); border-width: 0 2px; }
 .player-meta { min-height: 58px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); }
 .pulse { display: inline-block; width: 8px; height: 8px; margin-right: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 13px #34d399; }
 .story { padding: 100px 0 50px; }
@@ -70,4 +92,8 @@ footer { min-height: 100px; border-top: 1px solid var(--line); display: flex; al
   .topbar, main, footer { width: min(100% - 24px, 1180px); }
   h1 { font-size: 43px; }
   .principles { grid-template-columns: 1fr; }
+  .player-controls { min-height: 58px; gap: 7px; padding-inline: 10px; }
+  .control-button { width: 34px; height: 34px; flex-basis: 34px; }
+  .time-display { min-width: 31px; font-size: 11px; }
+  .sound-button { display: none; }
 }
