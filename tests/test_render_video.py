@@ -1,6 +1,12 @@
 import unittest
 
-from scripts.render_video import fit_narration, tracked_box_position
+from scripts.render_video import HEIGHT, LOWER_THIRD_TOP, fit_narration, tracked_box_position
+
+
+class OverlayLayoutTests(unittest.TestCase):
+    def test_lower_third_is_half_height(self) -> None:
+        # The previous ribbon occupied 235 px (y=485 through the 720 px frame).
+        self.assertEqual(HEIGHT - LOWER_THIRD_TOP, 118)
 
 
 class FitNarrationTests(unittest.TestCase):
